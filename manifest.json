@@ -1,0 +1,33 @@
+{
+  "name": "Reddit Notifications",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "blah",
+  "homepage_url": "http://google.com",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "page": "html/background.html",
+    "persistent": true
+  },
+  "options_page": "html/options.html",
+  "browser_action": {
+    "default_icon": "icons/icon19.png",
+    "default_title": "browser action demo",
+    "default_popup": "html/browserAction.html"
+  },
+  "permissions": [
+    "http://127.0.0.1/*",
+    "https://oauth.reddit.com/*",
+    "https://www.reddit.com/*",
+    "identity",
+    "notifications",
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "tabs"
+  ]
+}
