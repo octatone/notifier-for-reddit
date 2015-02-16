@@ -6,9 +6,7 @@ var exchangeProxy = 'http://127.0.0.1:8880';
 var storage = chrome.storage.sync;
 var pollInterval = 15 * 1000;
 
-var notifiedIDs = [];
 var currentNotifications = [];
-
 var currentTimeout;
 
 chrome.storage.onChanged.addListener(function (changes, namespace) {
@@ -239,14 +237,36 @@ function createNotification (data) {
   );
 }
 
+function updateBadge (unreadCount) {
+
+  chrome.browserAction.setBadgeText({
+    'text': unreadCount > 0 ? '' + unreadCount : ''
+  });
+}
+
+function updateIcon (unreadCount) {
+
+  chrome.browserAction.setIcon({
+    'path': '../icons/envelope_' + (unreadCount > 0 ? 'unread' : 'read') + '.png'
+  });
+}
+
 function handleInboxData (data) {
+
+  var unread = 0;
 
   currentNotifications = data;
   currentNotifications.forEach(function (data) {
 
     var notificationData = data.data;
-    notificationData['new'] && createNotification(notificationData);
+    if (notificationData['new']) {
+      createNotification(notificationData);
+      unread += 1;
+    }
   });
+
+  updateIcon(unread);
+  updateBadge(unread);
 }
 
 function clearCurrentTimeout () {

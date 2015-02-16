@@ -15,9 +15,11 @@
   },
   "options_page": "html/options.html",
   "browser_action": {
-    "default_icon": "icons/icon19.png",
-    "default_title": "browser action demo",
-    "default_popup": "html/browserAction.html"
+    "default_title": "Notifier for Reddit",
+    "default_popup": "html/browserAction.html",
+    "default_icon": {
+      "38": "icons/envelope_read.png"
+    }
   },
   "permissions": [
     "http://127.0.0.1/*",
