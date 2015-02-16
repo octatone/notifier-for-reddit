@@ -275,7 +275,7 @@ function fetchInbox (accessToken) {
 function setNextPoll () {
 
   clearCurrentTimeout();
-  clearTimeout = setTimeout(poll, pollInterval);
+  currentTimeout = setTimeout(poll, pollInterval);
 }
 
 function poll () {
