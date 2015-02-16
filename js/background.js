@@ -9,6 +9,8 @@ var pollInterval = 15 * 1000;
 var notifiedIDs = [];
 var currentNotifications = [];
 
+var currentTimeout;
+
 chrome.storage.onChanged.addListener(function (changes, namespace) {
 
   for (var key in changes) {
@@ -160,6 +162,8 @@ function exchangeCode (code, callback) {
 
 function exchangeRefreshToken (refreshToken, callback) {
 
+  var accessToken;
+
   $.post(exchangeProxy + '/token', {
     'refreshToken': refreshToken
   })
@@ -167,10 +171,11 @@ function exchangeRefreshToken (refreshToken, callback) {
 
     if (response && response.access_token) {
       saveTokenData(response);
-      callback && callback(response.access_token);
+      accessToken = response.access_token;
     }
-  });
 
+    callback && callback(accessToken);
+  });
 }
 
 function login () {
@@ -211,8 +216,10 @@ function fetchToken (callback) {
       console.log('token expired');
       exchangeRefreshToken(refreshToken, callback);
     }
+    else {
+      callback();
+    }
   });
-
 }
 
 function createNotification (data) {
@@ -242,27 +249,50 @@ function handleInboxData (data) {
   });
 }
 
-function fetchInbox () {
+function clearCurrentTimeout () {
+
+  currentTimeout && clearTimeout(currentTimeout);
+}
+
+function fetchInbox (accessToken) {
+
+  var request = $.ajax(apiBase + '/message/inbox.json?mark=false', {
+    'headers': {
+      'x-reddit-notifier': 'true',
+      'Authorization': 'bearer '  + accessToken
+    }
+  })
+  .always(function (response) {
+
+    if (response && response.kind === 'Listing') {
+      handleInboxData(response.data.children);
+    }
+  });
+
+  return request;
+}
+
+function setNextPoll () {
+
+  clearCurrentTimeout();
+  clearTimeout = setTimeout(poll, pollInterval);
+}
+
+function poll () {
+
+  clearCurrentTimeout();
 
   fetchToken(function (accessToken) {
 
-    console.log('using token:', accessToken);
-
-    $.ajax(apiBase + '/message/inbox.json?mark=false', {
-      'headers': {
-        'x-reddit-notifier': 'true',
-        'Authorization': 'bearer '  + accessToken
-      }
-    })
-    .always(function (response) {
-
-      if (response && response.kind === 'Listing') {
-        handleInboxData(response.data.children);
-      }
-
-      setTimeout(fetchInbox, pollInterval);
-    });
+    if (accessToken) {
+      console.log('using token:', accessToken);
+      fetchInbox(accessToken).always(setNextPoll)
+    }
+    else {
+      console.log('no token waiting ...');
+      setNextPoll();
+    }
   });
 }
 
-fetchInbox();
+poll();
