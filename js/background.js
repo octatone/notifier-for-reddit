@@ -2,7 +2,7 @@ var clientID = 'Caq9b9StS2HEVA';
 var authURL = 'https://www.reddit.com/api/v1/authorize';
 var apiBase = 'https://oauth.reddit.com';
 var redirectURI = 'https://emnickgjohociiikbldglnbncfebhoel.chromiumapp.org/provider_cb';
-var exchangeProxy = 'http://127.0.0.1:8880';
+var exchangeProxy = 'http://reddit-notifier-oauth-exchange.herokuapp.com';
 var storage = chrome.storage.sync;
 var pollInterval = 15 * 1000;
 
@@ -188,9 +188,20 @@ function login () {
 
     var params = getParams(redirectURL);
     if (params.state === state && params.code) {
-      exchangeCode(params.code);
+      exchangeCode(params.code, poll);
     }
   });
+}
+
+function logout () {
+
+  storage.remove([
+    'accessToken',
+    'refreshToken',
+    'expiration'
+  ]);
+
+  currentNotifications = [];
 }
 
 function fetchToken (callback) {
@@ -246,8 +257,13 @@ function updateBadge (unreadCount) {
 
 function updateIcon (unreadCount) {
 
+  var base = '../icons/envelope_' + (unreadCount > 0 ? 'unread' : 'read');
+
   chrome.browserAction.setIcon({
-    'path': '../icons/envelope_' + (unreadCount > 0 ? 'unread' : 'read') + '.png'
+    'path': {
+      '19': base + '_19.png',
+      '38': base + '_38.png'
+    }
   });
 }
 
@@ -264,6 +280,8 @@ function handleInboxData (data) {
       unread += 1;
     }
   });
+
+  chrome.runtime.sendMessage({'notifications': 'update'});
 
   updateIcon(unread);
   updateBadge(unread);
@@ -306,7 +324,7 @@ function poll () {
 
     if (accessToken) {
       console.log('using token:', accessToken);
-      fetchInbox(accessToken).always(setNextPoll)
+      fetchInbox(accessToken).always(setNextPoll);
     }
     else {
       console.log('no token waiting ...');

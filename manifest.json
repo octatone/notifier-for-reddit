@@ -1,12 +1,10 @@
 {
-  "name": "Reddit Notifications",
-  "version": "0.0.1",
+  "name": "Notifier for Reddit",
+  "version": "0.1.0",
   "manifest_version": 2,
-  "description": "blah",
+  "description": "Desktop notifictations for your reddit inbox.",
   "homepage_url": "http://google.com",
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
   "background": {
@@ -18,11 +16,12 @@
     "default_title": "Notifier for Reddit",
     "default_popup": "html/browserAction.html",
     "default_icon": {
-      "38": "icons/envelope_read.png"
+      "19": "icons/envelope_read_19.png",
+      "38": "icons/envelope_read_38.png"
     }
   },
   "permissions": [
-    "http://127.0.0.1/*",
+    "http://reddit-notifier-oauth-exchange.herokuapp.com/*",
     "https://oauth.reddit.com/*",
     "https://www.reddit.com/*",
     "identity",
