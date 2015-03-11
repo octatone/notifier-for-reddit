@@ -1,5 +1,6 @@
 'use strict';
 
+var chrome = window.chrome;
 var clientID = 'Caq9b9StS2HEVA';
 var authURL = 'https://www.reddit.com/api/v1/authorize';
 var apiBase = 'https://oauth.reddit.com';
@@ -7,6 +8,7 @@ var redirectURI = 'https://odmoedfabaohbdoiolgfhedcbfpcindh.chromiumapp.org/prov
 var exchangeProxy = 'http://reddit-notifier-oauth-exchange.herokuapp.com';
 var storage = chrome.storage.sync;
 var pollInterval = 15 * 1000;
+var timeout = 30 * 1000;
 
 var notifiedIds = {};
 var currentNotifications = [];
@@ -149,8 +151,12 @@ function saveTokenData (data) {
 
 function exchangeCode (code, callback) {
 
-  $.post(exchangeProxy + '/exchange', {
-    'code': code
+  $.ajax(exchangeProxy + '/exchange', {
+    'type': 'POST',
+    'data': {
+      'code': code
+    },
+    'timeout': timeout
   })
   .always(function (response) {
 
@@ -312,7 +318,8 @@ function fetchInbox (accessToken) {
     'headers': {
       'x-reddit-notifier': 'true',
       'Authorization': 'bearer '  + accessToken
-    }
+    },
+    'timeout': timeout
   })
   .always(function (response) {
 
