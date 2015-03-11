@@ -1,3 +1,5 @@
+'use strict';
+
 var clientID = 'Caq9b9StS2HEVA';
 var authURL = 'https://www.reddit.com/api/v1/authorize';
 var apiBase = 'https://oauth.reddit.com';
@@ -6,6 +8,7 @@ var exchangeProxy = 'http://reddit-notifier-oauth-exchange.herokuapp.com';
 var storage = chrome.storage.sync;
 var pollInterval = 15 * 1000;
 
+var notifiedIds = {};
 var currentNotifications = [];
 var currentTimeout;
 
@@ -275,9 +278,18 @@ function handleInboxData (data) {
   currentNotifications.forEach(function (data) {
 
     var notificationData = data.data;
-    if (notificationData['new']) {
+    var isNotNotified = !notifiedIds[notificationData.id];
+    var isNew = notificationData['new'];
+
+    if (isNew && isNotNotified) {
       createNotification(notificationData);
+      notifiedIds[notificationData.id] = true;
       unread += 1;
+    }
+    else if (!isNew) {
+      // cleanup notified ids tracker
+      // don't let it grow infinitely
+      delete notifiedIds[notificationData.id];
     }
   });
 
