@@ -281,9 +281,11 @@ function handleInboxData (data) {
     var isNotNotified = !notifiedIds[notificationData.id];
     var isNew = notificationData['new'];
 
-    if (isNew && isNotNotified) {
-      createNotification(notificationData);
-      notifiedIds[notificationData.id] = true;
+    if (isNew) {
+      if (isNotNotified) {
+        createNotification(notificationData);
+        notifiedIds[notificationData.id] = true;
+      }
       unread += 1;
     }
     else if (!isNew) {
