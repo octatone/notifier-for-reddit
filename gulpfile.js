@@ -3,11 +3,26 @@
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
 
-gulp.task('scripts', function () {
+var libs = [
+  'react/addons'
+];
+
+gulp.task('scripts-external', function () {
+
+  gulp.src('./src/vendor/external.js')
+    .pipe(browserify({
+      'debug': false,
+      'require': libs
+    }))
+    .pipe(gulp.dest('./extension/js/vendor/'));
+});
+
+gulp.task('scripts', ['scripts-external'], function () {
 
   gulp.src('./src/*.js')
     .pipe(browserify({
       'debug': false,
+      'external': libs,
       'transform': [
         'babelify',
         'reactify'
