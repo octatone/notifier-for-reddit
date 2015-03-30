@@ -7,12 +7,18 @@ var libs = [
   'react/addons'
 ];
 
+var transforms = [
+  'babelify',
+  'reactify'
+];
+
 gulp.task('scripts-external', function () {
 
   gulp.src('./src/vendor/external.js')
     .pipe(browserify({
       'debug': false,
-      'require': libs
+      'require': libs,
+      'transform': transforms
     }))
     .pipe(gulp.dest('./extension/js/vendor/'));
 });
@@ -23,10 +29,7 @@ gulp.task('scripts', ['scripts-external'], function () {
     .pipe(browserify({
       'debug': false,
       'external': libs,
-      'transform': [
-        'babelify',
-        'reactify'
-      ]
+      'transform': transforms
     }))
     .pipe(gulp.dest('./extension/js/'));
 });
