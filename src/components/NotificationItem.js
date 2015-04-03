@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react/addons');
+var classnames = require('classnames');
 
 var NotificationItem = React.createClass({
 
@@ -27,14 +28,23 @@ var NotificationItem = React.createClass({
     var self = this;
     var props = self.props;
 
+    var unread = !!props.new;
+
     var header = props.subject + ' from ' + props.author;
     var body =  _.unescape(props.body_html);
     body = body.replace(/href="/gi, 'target="_blank" href="');
     body = body.replace(/href="\/r\//gi, 'href="https://www.reddit.com/r/');
     var footer = self.renderFooter();
 
+    var liClasses = classnames(
+      'notification',
+      {
+        'unread': unread
+      }
+    );
+
     return (
-      <li className="notification">
+      <li className={liClasses}>
         <div className='header'>
           {header}
         </div>

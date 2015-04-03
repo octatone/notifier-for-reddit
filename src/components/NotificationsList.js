@@ -10,7 +10,8 @@ var NotificationsList = React.createClass({
     var notifications = props.notifications;
     var notificationItems = notifications.map(function (notification) {
 
-      return <NotificationItem {...notification.data}/>
+      var data = notification.data;
+      return <NotificationItem {...data} key={data.id}/>
     });
 
     return (
