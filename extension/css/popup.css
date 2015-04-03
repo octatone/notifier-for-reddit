@@ -31,9 +31,7 @@ pre code {
 
 .notification {
   display: block;
-  margin: 15px;
   background: white;
-  box-shadow: 0 5px 20px -5px rgba(0,0,0,0.3);
 }
 
 .notification .header,
@@ -63,4 +61,9 @@ pre code {
 .notification .footer {
   font-weight: 300;
   padding: 0px 15px 10px 15px;
+}
+
+.notification.unread .header {
+  background: #ff8b60;
+  color: white;
 }
