@@ -2,8 +2,26 @@
 
 var React = require('react/addons');
 var classnames = require('classnames');
+var chrome = window.chrome;
+var background = chrome.extension.getBackgroundPage();
 
 var NotificationItem = React.createClass({
+
+  'isUnread': function () {
+
+    return !!this.props.new;
+  },
+
+  'markAsRead': function () {
+
+    var self = this;
+    var props = self.props;
+    var name = props.name;
+    if (self.isUnread()) {
+      console.log(name);
+      background.markCommentRead(name);
+    }
+  },
 
   'renderFooter': function () {
 
@@ -28,8 +46,7 @@ var NotificationItem = React.createClass({
     var self = this;
     var props = self.props;
 
-    var unread = !!props.new;
-
+    var unread = self.isUnread();
     var header = props.subject + ' from ' + props.author;
     var body =  _.unescape(props.body_html);
     body = body.replace(/href="/gi, 'target="_blank" href="');
@@ -44,7 +61,7 @@ var NotificationItem = React.createClass({
     );
 
     return (
-      <li className={liClasses}>
+      <li className={liClasses} onClick={self.markAsRead}>
         <div className='header'>
           {header}
         </div>

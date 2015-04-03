@@ -21896,9 +21896,27 @@ module.exports = Login;
 
 var React = require("react/addons");
 var classnames = require("classnames");
+var chrome = window.chrome;
+var background = chrome.extension.getBackgroundPage();
 
 var NotificationItem = React.createClass({
   displayName: "NotificationItem",
+
+  isUnread: function isUnread() {
+
+    return !!this.props["new"];
+  },
+
+  markAsRead: function markAsRead() {
+
+    var self = this;
+    var props = self.props;
+    var name = props.name;
+    if (self.isUnread()) {
+      console.log(name);
+      background.markCommentRead(name);
+    }
+  },
 
   renderFooter: function renderFooter() {
 
@@ -21926,8 +21944,7 @@ var NotificationItem = React.createClass({
     var self = this;
     var props = self.props;
 
-    var unread = !!props["new"];
-
+    var unread = self.isUnread();
     var header = props.subject + " from " + props.author;
     var body = _.unescape(props.body_html);
     body = body.replace(/href="/gi, "target=\"_blank\" href=\"");
@@ -21940,7 +21957,7 @@ var NotificationItem = React.createClass({
 
     return React.createElement(
       "li",
-      { className: liClasses },
+      { className: liClasses, onClick: self.markAsRead },
       React.createElement(
         "div",
         { className: "header" },
@@ -21973,7 +21990,7 @@ var NotificationsList = React.createClass({
     var notificationItems = notifications.map(function (notification) {
 
       var data = notification.data;
-      return React.createElement(NotificationItem, _extends({}, data, { key: data.id }));
+      return React.createElement(NotificationItem, _extends({}, data, { key: data.name }));
     });
 
     return React.createElement(

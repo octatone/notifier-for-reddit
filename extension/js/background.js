@@ -91,6 +91,8 @@ chrome.notifications.onClicked.addListener(function (notificationID) {
   url && chrome.tabs.create({
     'url': url
   });
+
+  markCommentRead(notification.name);
 });
 
 function getParams (uri) {
@@ -307,11 +309,6 @@ function handleInboxData (data) {
   updateBadge(unread);
 }
 
-function clearCurrentTimeout () {
-
-  currentTimeout && clearTimeout(currentTimeout);
-}
-
 function fetchInbox (accessToken) {
 
   var request = $.ajax(apiBase + '/message/inbox.json?mark=false', {
@@ -329,6 +326,33 @@ function fetchInbox (accessToken) {
   });
 
   return request;
+}
+
+function markCommentRead (id) {
+
+  fetchToken(function (accessToken) {
+
+    $.ajax(apiBase + '/api/read_message', {
+      'method': 'POST',
+      'headers': {
+        'x-reddit-notifier': 'true',
+        'Authorization': 'bearer '  + accessToken
+      },
+      'timeout': timeout,
+      'data': {
+        'id': id
+      }
+    })
+    .done(function (response) {
+
+      poll();
+    });
+  });
+}
+
+function clearCurrentTimeout () {
+
+  currentTimeout && clearTimeout(currentTimeout);
 }
 
 function setNextPoll () {

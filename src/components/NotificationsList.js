@@ -11,7 +11,7 @@ var NotificationsList = React.createClass({
     var notificationItems = notifications.map(function (notification) {
 
       var data = notification.data;
-      return <NotificationItem {...data} key={data.id}/>
+      return <NotificationItem {...data} key={data.name}/>
     });
 
     return (
