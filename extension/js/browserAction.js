@@ -21898,6 +21898,7 @@ var React = require("react/addons");
 var classnames = require("classnames");
 var chrome = window.chrome;
 var background = chrome.extension.getBackgroundPage();
+var _ = window._;
 
 var NotificationItem = React.createClass({
   displayName: "NotificationItem",
@@ -21918,22 +21919,22 @@ var NotificationItem = React.createClass({
     }
   },
 
-  renderFooter: function renderFooter() {
+  renderContext: function renderContext() {
 
     var props = this.props;
-    var footer = props.link_title;
+    var linkTitle = props.link_title;
     var link = props.context;
     link = link ? "https://www.reddit.com" + link : undefined;
 
-    if (footer && link) {
+    if (linkTitle && link) {
       return React.createElement(
         "div",
-        { className: "footer" },
+        { className: "context" },
         React.createElement(
           "a",
           { href: link, target: "_blank" },
           "re: ",
-          footer
+          linkTitle
         )
       );
     }
@@ -21945,11 +21946,11 @@ var NotificationItem = React.createClass({
     var props = self.props;
 
     var unread = self.isUnread();
-    var header = props.subject + " from " + props.author;
+    var title = props.subject + " from " + props.author;
     var body = _.unescape(props.body_html);
     body = body.replace(/href="/gi, "target=\"_blank\" href=\"");
     body = body.replace(/href="\/r\//gi, "href=\"https://www.reddit.com/r/");
-    var footer = self.renderFooter();
+    var context = self.renderContext();
 
     var liClasses = classnames("notification", {
       unread: unread
@@ -21961,10 +21962,14 @@ var NotificationItem = React.createClass({
       React.createElement(
         "div",
         { className: "header" },
-        header
+        React.createElement(
+          "div",
+          { className: "title" },
+          title
+        ),
+        context
       ),
-      React.createElement("div", { className: "body", dangerouslySetInnerHTML: { __html: body } }),
-      footer
+      React.createElement("div", { className: "body", dangerouslySetInnerHTML: { __html: body } })
     );
   }
 });
