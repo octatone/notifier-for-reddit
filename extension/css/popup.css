@@ -34,7 +34,6 @@ pre code {
   background: white;
 }
 
-.notification .header,
 .notification .body,
 .notification .footer {
   overflow: hidden;
@@ -48,13 +47,35 @@ pre code {
 }
 
 .notification .header {
+  overflow: hidden;
+  padding: 10px 5px;
+  letter-spacing: 0.05em;
   background: #cee3f8;
+  color: #111;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.notification .header .title {
+  font-weight: 500;
+}
+
+.notification .header .context a {
   color: #336699;
+  font-size: 0.9em;
+}
+
+.notification .header .timestamp {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.notification.unread .header .context a,
+.notification.unread .header .timestamp {
+  color: #EFEFEF;
 }
 
 .notification .body {
   font-size: 13px;
-  /*white-space: pre-wrap;*/
   word-break: break-word;
 }
 
