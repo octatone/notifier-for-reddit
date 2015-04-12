@@ -64,8 +64,14 @@ pre code {
   font-size: 0.9em;
 }
 
-.notification.unread .header .context a {
-  color: white;
+.notification .header .timestamp {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.notification.unread .header .context a,
+.notification.unread .header .timestamp {
+  color: #EFEFEF;
 }
 
 .notification .body {

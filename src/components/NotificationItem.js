@@ -2,6 +2,7 @@
 
 var React = require('react/addons');
 var classnames = require('classnames');
+var moment = require('moment');
 var chrome = window.chrome;
 var background = chrome.extension.getBackgroundPage();
 var _ = window._;
@@ -53,6 +54,7 @@ var NotificationItem = React.createClass({
     body = body.replace(/href="/gi, 'target="_blank" href="');
     body = body.replace(/href="\/r\//gi, 'href="https://www.reddit.com/r/');
     var context = self.renderContext();
+    var timestamp = moment.utc(props.created_utc * 1000).local().fromNow();
 
     var liClasses = classnames(
       'notification',
@@ -68,6 +70,9 @@ var NotificationItem = React.createClass({
             {title}
           </div>
           {context}
+          <div className='timestamp'>
+            {timestamp}
+          </div>
         </div>
         <div className='body' dangerouslySetInnerHTML={{'__html': body}}/>
       </li>
