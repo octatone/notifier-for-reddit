@@ -6,16 +6,18 @@ var mountNode = document.getElementById('react-main-mount');
 
 var chrome = window.chrome;
 var background = chrome.extension.getBackgroundPage();
-var notifications = background.currentNotifications;
 
-background.fetchToken(function (accessToken) {
+background.loadToken(function (accessToken) {
 
-  console.log('browserAction', accessToken);
+  background.loadNotifications(function (notifications) {
 
-  var browserActionApp = new BrowserActionApp({
-    'notifications': notifications,
-    'loggedIn': !!accessToken
+    console.log('browserAction', accessToken, notifications);
+
+    var browserActionApp = new BrowserActionApp({
+      'notifications': notifications,
+      'loggedIn': !!accessToken
+    });
+
+    React.render(browserActionApp, mountNode);
   });
-
-  React.render(browserActionApp, mountNode);
 });

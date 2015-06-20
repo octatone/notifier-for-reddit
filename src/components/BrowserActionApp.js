@@ -8,10 +8,12 @@ var background = chrome.extension.getBackgroundPage();
 
 var BrowserActionApp = React.createClass({
 
-  'updateNotifications': function () {
+  'updateNotifications': function (notifications) {
+
+    console.log(notifications)
 
     this.setProps({
-      'notifications': background.currentNotifications
+      'notifications': notifications
     });
   },
 
@@ -30,16 +32,9 @@ var BrowserActionApp = React.createClass({
                     storageChange.oldValue,
                     storageChange.newValue);
       }
-    });
 
-    chrome.runtime.onMessage.addListener(function (request, sender) {
-
-      console.log(sender.tab ?
-                  "from a content script:" + sender.tab.url :
-                  "from the extension");
-
-      if (request.notifications === 'update') {
-        self.updateNotifications();
+      if ('notifications' in changes) {
+        self.updateNotifications(changes.notifications);
       }
     });
   },

@@ -6,7 +6,8 @@ var authURL = 'https://www.reddit.com/api/v1/authorize';
 var apiBase = 'https://oauth.reddit.com';
 var redirectURI = 'https://odmoedfabaohbdoiolgfhedcbfpcindh.chromiumapp.org/provider_cb';
 var exchangeProxy = 'http://reddit-notifier-oauth-exchange.herokuapp.com';
-var storage = chrome.storage.sync;
+var chromeSyncStorage = chrome.storage.sync;
+var chromeLocalStorage = chrome.storage.local;
 var pollInterval = 15 * 1000;
 var timeout = 30 * 1000;
 
@@ -148,7 +149,7 @@ function saveTokenData (data) {
     saveData.expiration = now + (data.expires_in * 1000) - 60000;
   }
 
-  storage.set(saveData);
+  chromeSyncStorage.set(saveData);
 }
 
 function exchangeCode (code, callback) {
@@ -206,18 +207,30 @@ function login () {
 
 function logout () {
 
-  storage.remove([
-    'accessToken',
-    'refreshToken',
-    'expiration'
-  ]);
-
+  chromeSyncStorage.clear();
+  chromeLocalStorage.clear();
   currentNotifications = [];
+}
+
+function loadToken (callback) {
+
+  chromeSyncStorage.get('accessToken', function (data) {
+
+    callback(data.accessToken);
+  });
+}
+
+function loadNotifications (callback) {
+
+  chromeLocalStorage.get('notifications', function (data) {
+
+    callback(data.notifications || []);
+  });
 }
 
 function fetchToken (callback) {
 
-  storage.get([
+  chromeSyncStorage.get([
     'accessToken',
     'refreshToken',
     'expiration'
@@ -282,6 +295,10 @@ function handleInboxData (data) {
 
   var unread = 0;
 
+  chromeLocalStorage.set({
+    'notifications': data
+  });
+
   currentNotifications = data;
   currentNotifications.forEach(function (data) {
 
@@ -297,13 +314,10 @@ function handleInboxData (data) {
       unread += 1;
     }
     else if (!isNew) {
-      // cleanup notified ids tracker
-      // don't let it grow infinitely
+      chrome.notifications.clear(notificationData.id);
       delete notifiedIds[notificationData.id];
     }
   });
-
-  chrome.runtime.sendMessage({'notifications': 'update'});
 
   updateIcon(unread);
   updateBadge(unread);

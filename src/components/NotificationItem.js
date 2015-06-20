@@ -20,8 +20,25 @@ var NotificationItem = React.createClass({
     var props = self.props;
     var name = props.name;
     if (self.isUnread()) {
-      console.log(name);
       background.markCommentRead(name);
+    }
+  },
+
+  'renderTitle': function () {
+
+    var props = this.props;
+    var context = props.context;
+    if (context) {
+      return  props.subject + ' from ' + props.author;
+    }
+    else {
+      var url = 'https://www.reddit.com/message/messages/' + props.id;
+      return (
+        <div>
+          inbox message from {props.author}<br/>
+          <a href={url} target='_blank'>{props.subject}</a>
+        </div>
+      )
     }
   },
 
@@ -31,7 +48,6 @@ var NotificationItem = React.createClass({
     var linkTitle = props.link_title;
     var link = props.context;
     link = link ? 'https://www.reddit.com' + link : undefined;
-
     if (linkTitle && link) {
       return (
         <div className='context'>
@@ -49,7 +65,7 @@ var NotificationItem = React.createClass({
     var props = self.props;
 
     var unread = self.isUnread();
-    var title = props.subject + ' from ' + props.author;
+    var title = self.renderTitle();
     var body =  _.unescape(props.body_html);
     body = body.replace(/href="/gi, 'target="_blank" href="');
     body = body.replace(/href="\/r\//gi, 'href="https://www.reddit.com/r/');
